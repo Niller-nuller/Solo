@@ -47,6 +47,8 @@ public class InventoryService {
             System.out.println("Item does not exist");
         } else if (checkInventory(p,findItem)){
             p.getInventory().addItem(findItem);
+        } else if (findItem instanceof Consumables){
+
         }
     }
 
@@ -86,24 +88,17 @@ public class InventoryService {
             }
         }return null;
     }
-//    public boolean checkInventoryParamters(Player p){
-//
-//    }
-//    public boolean checkWeight(Player p){
-//        double playerCurrentCarryWeight = p.getInventory().getCurrentPlayerCarryWeight();
-//        double maxPlayerCarryWeight = p.getInventory().getMaxPlayerCarryWeight();
-//    }
 
     public boolean checkInventory(Player p, Items item) throws MaxWeightReached, MaxSlotsReached{
-        int availableSlots = p.getInventory().getInventorySlots().getCurrentSlots();
-        int usedSlots = p.getInventory().getInventorySlots().getUsedSlots();
-        double currentWeight = p.getInventory().getCurrentPlayerCarryWeight() + item.getWeight();
-        double maxWeight = p.getInventory().getMaxPlayerCarryWeight();
+        int availablePlayerSlots = p.getInventory().getInventorySlots().getCurrentSlots();
+        int usedPlayerSlots = p.getInventory().getInventorySlots().getUsedSlots();
+        double usedPlayerWeight = p.getInventory().getCurrentPlayerCarryWeight() + item.getWeight();
+        double maxPlayerWeight = p.getInventory().getMaxPlayerCarryWeight();
 
-        if(usedSlots >= availableSlots){
-            throw new MaxSlotsReached(usedSlots + " out of " + availableSlots + " slots filled");
+        if(usedPlayerSlots >= availablePlayerSlots){
+            throw new MaxSlotsReached(usedPlayerSlots + " out of " + availablePlayerSlots + " slots filled");
         }
-        else if(currentWeight >= maxWeight){
+        else if(usedPlayerWeight >= maxPlayerWeight){
             throw new MaxWeightReached("Weight limit reached.");
         }
         else {
