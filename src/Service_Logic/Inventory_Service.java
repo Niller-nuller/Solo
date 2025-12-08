@@ -12,7 +12,7 @@ public class Inventory_Service {
     private final List<Player> players = new ArrayList<>();
 
     public Inventory_Service() {defaultItems();}
-
+//Tester
 //------------------------------------------------Player Management-----------------------------------------------------
     public Player createPlayer(String name){ //To be called in the client class.
         if (getPlayerByName(name) != null) { //Calls the method getPlayerByName to either get a null or an object.
