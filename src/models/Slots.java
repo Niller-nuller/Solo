@@ -19,11 +19,8 @@ public class Slots {
         return this.usedSlots;
     }
 
-    public void addUsedSlots(int currentSlots){
-        this.usedSlots += usedSlots;
-    }
-    public void deductUsedSlots(int currentSlots){
-        this.usedSlots -= usedSlots;
+    public void setUsedSlots(int amount){
+        this.usedSlots = amount;
     }
 
     public void setCurrentMaxSlots() throws MaxSlotsReached {
@@ -34,5 +31,4 @@ public class Slots {
             this.currentSlots += 32;
         }
     }
-
 }

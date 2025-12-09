@@ -1,10 +1,10 @@
 package models;
 
-public abstract class Items {
-    protected String name;
-    protected double weight;
+public abstract class Item {
+    private final String name;
+    private final double weight;
 
-    public Items(String name, double weight) {
+    public Item(String name, double weight) {
         this.name = name;
         this.weight = weight;
     }

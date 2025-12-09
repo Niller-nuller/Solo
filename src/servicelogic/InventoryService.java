@@ -8,7 +8,7 @@ import java.util.List;
 
 public class InventoryService {
 
-    private final List<Items> worldItems = new ArrayList<>();
+    private final List<Item> worldItems = new ArrayList<>();
     private final List<Player> players = new ArrayList<>();
     public InventoryService() {defaultItems(); defaultPlayer();}
     //------------------------------------------------Player Management-----------------------------------------------------
@@ -41,55 +41,60 @@ public class InventoryService {
     }
     //This layer of code in only to used to either create or login the player.
 //------------------------------------------------Item Management-------------------------------------------------------
-    public void addItem(Player p, String itemName){ // This method is to be called from the client class.
-        Items findItem = getWorldItemByName(itemName);
-        if (findItem == null) {
-            System.out.println("Item does not exist");
-        } else if (checkInventory(p,findItem)){
-            p.getInventory().addItem(findItem);
-        } else if (findItem instanceof Consumables){
+//    public void addItem(Player p, String itemName) throws ItemNotFound { // This method is to be called from the client class.
+//        Item findItem = getWorldItemByName(itemName);
+//            if (findItem == null) {
+//                throw new  ItemNotFound(itemName + " not found");
+//                }//Check if the item exists, otherwise it sends an exception.
+//        checkInventory(p, findItem);//This controls if the object does not go over any set limits for the player object.
+//            if (findItem instanceof Consumable consumable){
+//                if(consumable.isStackable()){
+//                    p.getInventory().addConsumable(p,consumable);
+//            }
+//        }
+//            else{
+//                p.getInventory().addItem(findItem);
+//            }
+//    }
+    public void addItem(Player p, String itemName) throws ItemNotFound,MaxWeightReached,MaxSlotsReached{
+        Item findItem = getWorldItemByName(itemName);
+        if (findItem == null){
+            throw new ItemNotFound(itemName);
+        }
+        checkInventory(p, findItem);
 
+        if(findItem instanceof Consumable c){
+            if (c.isStackable()){
+                p.getInventory().addConsumable(new Consumable((c.getName()),c.getWeight(),true));
+            }
+            else {
+                p.getInventory().addItem(c);
+            }
+        }
+        else{
+            p.getInventory().addItem(findItem);
         }
     }
 
-    public void removeItem(Player p, String itemName){ // This method is to be called from the client class.
-        Items findItem = getWorldItemByName(itemName);
+    public void removeItem(Player p, String itemName) throws ItemNotFound{ // This method is to be called from the client class.
+        Item findItem = getWorldItemByName(itemName);
         if (findItem == null) {
-            System.out.println("Item does not exist");
+            throw new ItemNotFound(itemName + " not found");
         }
         else{
             p.getInventory().removeItem(findItem);
-            System.out.println(itemName + " has been removed from your inventory");
         }
     }
-    private void addConsumableItem(Player p, String itemName){
-        Items findItem = getWorldItemByName(itemName);
-        if (findItem == null) {
 
-        }
-
-    }
-    private void addMultipleConsumableItems(Player p, String itemName, int amount){
-        Items findItem = getWorldItemByName(itemName);
-        if(findItem == null){
-        }
-        else{
-            for(int i = 0; i < amount; i++){
-                p.getInventory().addConsumableItem(findItem);
-            }
-        }
-
-    }
-
-    private Items getWorldItemByName(String name){
-        for (Items i : worldItems){
+    private Item getWorldItemByName(String name){
+        for (Item i : worldItems){
             if(i.getName().equalsIgnoreCase(name)){
                 return i;
             }
         }return null;
     }
 
-    public boolean checkInventory(Player p, Items item) throws MaxWeightReached, MaxSlotsReached{
+    public void checkInventory(Player p, Item item) throws MaxWeightReached, MaxSlotsReached{
         int availablePlayerSlots = p.getInventory().getInventorySlots().getCurrentSlots();
         int usedPlayerSlots = p.getInventory().getInventorySlots().getUsedSlots();
         double usedPlayerWeight = p.getInventory().getCurrentPlayerCarryWeight() + item.getWeight();
@@ -101,9 +106,6 @@ public class InventoryService {
         else if(usedPlayerWeight >= maxPlayerWeight){
             throw new MaxWeightReached("Weight limit reached.");
         }
-        else {
-            return true;
-        }
     }
     // This layer is for adding and removing items from the player. It assumes a player is logged in.
 //---------------------------------------Slots Management---------------------------------------------------------------
@@ -113,12 +115,12 @@ public class InventoryService {
 
     //----------------------------------------------World Items Initialization----------------------------------------------
     public void defaultItems(){
-        worldItems.add(new Weapons("Short Sword",2.5,10));
-        worldItems.add(new Weapons("Short Axe",2.5,10));
-        worldItems.add(new Armors( "Helmet",2,2));
-        worldItems.add(new Armors( "Chestplate",8,6));
-        worldItems.add(new Consumables("Health Potion",0.2));
-        worldItems.add(new Weapons("Test Sword",50,10));
+        worldItems.add(new Weapon("Short Sword",2.5,10));
+        worldItems.add(new Weapon("Short Axe",2.5,10));
+        worldItems.add(new Armor( "Helmet",2,2));
+        worldItems.add(new Armor( "Chestplate",8,6));
+        worldItems.add(new Consumable("Health Potion",0.2,true));
+        worldItems.add(new Weapon("Test Sword",49.9999,10));
     }
     public void defaultPlayer(){
         players.add(new Player("Test"));
@@ -126,7 +128,7 @@ public class InventoryService {
     //------------------------------------------------Displays--------------------------------------------------------------
     public void displayWorldItems(){
         System.out.println("--- Available items ---");
-        for (Items i : worldItems){
+        for (Item i : worldItems){
             System.out.println("- " + i.getName() + " (" + i.getWeight() + " kg)");
         }
     }
@@ -142,7 +144,7 @@ public class InventoryService {
         }
         else{
             System.out.println("-----------------");
-            for (Items i : p.getInventory().getPlayerInventoryItems()){
+            for (Item i : p.getInventory().getPlayerInventoryItems()){
                 System.out.println("- " + i.getName() + " (" + i.getWeight() + " kg)");
             }
             System.out.println("---------------");

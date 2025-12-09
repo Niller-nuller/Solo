@@ -71,7 +71,6 @@ public class InventoryCliApp {
     private void handleLogInPlayer(Scanner scanner) {
         System.out.print("Username: ");
         String username = scanner.nextLine().trim();
-
         try {
             player = inv.loginPlayer(username);
             gameMenu(scanner);
@@ -91,7 +90,10 @@ public class InventoryCliApp {
             switch (choice) {
                 case "1" -> inventoryMenu(scanner);
                 case "2" -> handleDisplayWorldItems();
-                case "3" -> running = false;
+                case "3" -> {
+                    running = false;
+                    System.out.println("Returning");
+                }
             }
         }
     }
@@ -111,17 +113,22 @@ public class InventoryCliApp {
 
     //Inventory Menu-----------------------------------------------------------------
     public void inventoryMenu(Scanner scanner) {
-        inv.displayPlayerInventory(player);
         boolean running = true;
+        String choice;
         while (running) {
+            inv.displayPlayerInventory(player);
+            System.out.println(player.getInventory().getInventorySlots().getUsedSlots());
             printInventoryMenu();
-            String choice;
+
             choice = scanner.nextLine();
 
             switch (choice) {
                 case "1" -> handleAddItem(scanner);
                 case "2" -> handleRemoveItem(scanner);
-                case "3" -> running = false;
+                case "3" -> {
+                    running = false;
+                    System.out.println("Returning");
+                }
             }
         }
     }
@@ -144,8 +151,9 @@ public class InventoryCliApp {
             System.out.println(e.getMessage());
         } catch (MaxSlotsReached e){
             System.out.println(e.getMessage());
+        } catch (ItemNotFound e) {
+            System.out.println(e.getMessage());
         }
-        inventoryMenu(scanner);
     }
     public void handleRemoveItem(Scanner scanner){
         System.out.print("Item to remove: ");
@@ -153,10 +161,10 @@ public class InventoryCliApp {
         choice = scanner.nextLine();
         try {
             inv.removeItem(player, choice);
+            System.out.println(choice + " has been removed from your inventory");
         }catch (ItemNotFound e) {
             System.out.println(e.getMessage());
         }
-        inventoryMenu(scanner);
     }
 }
 
