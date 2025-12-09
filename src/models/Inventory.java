@@ -1,7 +1,9 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Inventory {
 
@@ -9,7 +11,7 @@ public class Inventory {
     private double currentPlayerCarryWeight = 0;
 
     private final List<Item> playerInventoryItems = new ArrayList<Item>();
-    private Slots inventorySlots = new Slots();
+    private final Slots inventorySlots = new Slots();
 
     public Inventory() {}
 
@@ -30,31 +32,24 @@ public class Inventory {
         recalculateWeightAndSlots();
     }
 
-    public void addConsumable(Consumable item){
-        for (Item i : playerInventoryItems){
-            if (i instanceof Consumable c && c.getName().equalsIgnoreCase(item.getName())){
-                c.addQuantity(1);
-                recalculateWeightAndSlots();
-                return;
-            }
-        }
-        playerInventoryItems.add(item);
-        recalculateWeightAndSlots();
-    }
-
     public void recalculateWeightAndSlots(){
-        double totalWeight = 0;
+        double totalWeight = 0.00;
         int usedSlots = 0;
 
+        Map<String, Integer> consumableCount = new HashMap<>();
+
         for (Item i : playerInventoryItems){
-            if(i instanceof Consumable c) {
-                totalWeight += c.getWeight() * c.getQuantity();
-                usedSlots += c.getRequiredSlots();
+            totalWeight += i.getWeight();
+            if(i instanceof Consumable c && c.isStackable()) {
+                consumableCount.put(c.getName(), consumableCount.getOrDefault(c.getName(), 0) + 1);
             }
             else{
-                totalWeight += i.getWeight();
                 usedSlots += 1;
             }
+        }
+        for(Map.Entry<String, Integer> entry : consumableCount.entrySet()){
+            int count =  entry.getValue();
+            usedSlots += (int) Math.ceil(count / 5.0);
         }
         currentPlayerCarryWeight = totalWeight;
         inventorySlots.setUsedSlots(usedSlots);

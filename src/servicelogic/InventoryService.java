@@ -41,21 +41,6 @@ public class InventoryService {
     }
     //This layer of code in only to used to either create or login the player.
 //------------------------------------------------Item Management-------------------------------------------------------
-//    public void addItem(Player p, String itemName) throws ItemNotFound { // This method is to be called from the client class.
-//        Item findItem = getWorldItemByName(itemName);
-//            if (findItem == null) {
-//                throw new  ItemNotFound(itemName + " not found");
-//                }//Check if the item exists, otherwise it sends an exception.
-//        checkInventory(p, findItem);//This controls if the object does not go over any set limits for the player object.
-//            if (findItem instanceof Consumable consumable){
-//                if(consumable.isStackable()){
-//                    p.getInventory().addConsumable(p,consumable);
-//            }
-//        }
-//            else{
-//                p.getInventory().addItem(findItem);
-//            }
-//    }
     public void addItem(Player p, String itemName) throws ItemNotFound,MaxWeightReached,MaxSlotsReached{
         Item findItem = getWorldItemByName(itemName);
         if (findItem == null){
@@ -63,17 +48,7 @@ public class InventoryService {
         }
         checkInventory(p, findItem);
 
-        if(findItem instanceof Consumable c){
-            if (c.isStackable()){
-                p.getInventory().addConsumable(new Consumable((c.getName()),c.getWeight(),true));
-            }
-            else {
-                p.getInventory().addItem(c);
-            }
-        }
-        else{
-            p.getInventory().addItem(findItem);
-        }
+        p.getInventory().addItem(findItem);
     }
 
     public void removeItem(Player p, String itemName) throws ItemNotFound{ // This method is to be called from the client class.
