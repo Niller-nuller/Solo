@@ -7,24 +7,28 @@ import java.util.Map;
 
 public class Inventory {
 
+    //The player object's max weight. Set
     private final double maxPlayerCarryWeight = 50.00;
     private double currentPlayerCarryWeight = 0;
 
     private final List<Item> playerInventoryItems = new ArrayList<Item>();
     private final Slots inventorySlots = new Slots();
 
+    //A constructor for the inventory class, it is called in player.
     public Inventory() {}
 
-
+    //A getter to get the player's max carry weight attribute.
     public double getMaxPlayerCarryWeight() {return maxPlayerCarryWeight;}
 
-    public double getCurrentPlayerCarryWeight() {
-        return currentPlayerCarryWeight;
-    }
+    //A getter to get the player's current weight variable.
+    public double getCurrentPlayerCarryWeight() {return currentPlayerCarryWeight;}
 
-    public List<Item> getPlayerInventoryItems() {
-        return playerInventoryItems;
-    }
+    //A getter to get the player object's inventory.
+    public List<Item> getPlayerInventoryItems() {return playerInventoryItems;}
+
+    //A getter to access the slots class.
+    public Slots getInventorySlots() {return inventorySlots;}
+
 
     //Method to add an item to the player object's List
     public void addItem(Item item) {
@@ -55,13 +59,9 @@ public class Inventory {
         inventorySlots.setUsedSlots(usedSlots);
     }
 
-    //Method to remove an item from the player object's list
+    //Method to remove an item object from the player's inventory list.
     public void removeItem(Item item) {
         playerInventoryItems.remove(item);
         recalculateWeightAndSlots();
-    }
-
-    public Slots getInventorySlots() {
-        return inventorySlots;
     }
 }

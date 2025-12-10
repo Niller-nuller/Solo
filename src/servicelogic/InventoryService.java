@@ -89,13 +89,16 @@ public class InventoryService {
     }
 
     //----------------------------------------------World Items Initialization----------------------------------------------
-    public void defaultItems(){
-        worldItems.add(new Weapon("Short Sword",2.5,10));
-        worldItems.add(new Weapon("Short Axe",2.5,10));
-        worldItems.add(new Armor( "Helmet",2,2));
-        worldItems.add(new Armor( "Chestplate",8,6));
-        worldItems.add(new Consumable("Health Potion",0.2,true));
-        worldItems.add(new Weapon("Test Sword",49.9999,10));
+    public void defaultItems() {
+        worldItems.add(new Weapon("Short Sword", 2.5, 10, MainHand));
+        worldItems.add(new Weapon("Short Axe", 2.5, 7, OffHand));
+        worldItems.add(new Armor("Helmet", 2, 2, Helmet));
+        worldItems.add(new Armor("Chestplate", 8, 6, Chestpiece));
+        worldItems.add(new Consumable("Health Potion", 0.2, true, Drinkable));
+        worldItems.add(new Consumable("Arrow", 0.1, true, Ammo));
+        worldItems.add(new Consumable("Rock", 0.4, true, Throwable));
+        worldItems.add(new Weapon("Test Sword", 49.9999, 67, MainHand));
+        worldItems.add(new Weapon("Great Sword", 5, 20, TwoHand));
     }
     public void defaultPlayer(){
         players.add(new Player("Test"));

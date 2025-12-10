@@ -137,34 +137,92 @@ public class InventoryCliApp {
         System.out.println("---Inventory Menu---");
         System.out.println("1. Add item");
         System.out.println("2. Remove item");
-        System.out.println("3. Exit");
-        System.out.println("------");
+        System.out.println("3. Sort items");
+        System.out.println("4. Back");
+        System.out.println("-------------------");
         System.out.print("Choice: ");
     }
-    public void handleAddItem(Scanner scanner){
+
+    public void handleAddItem(Scanner scanner) {
         System.out.print("Item to add: ");
         String choice;
         choice = scanner.nextLine();
         try {
             inv.addItem(player, choice);
-        } catch (MaxWeightReached e){
+            System.out.println(choice + " has been added to your inventory");
+        } catch (MaxWeightReached e) {
             System.out.println(e.getMessage());
-        } catch (MaxSlotsReached e){
+        } catch (MaxSlotsReached e) {
             System.out.println(e.getMessage());
         } catch (ItemNotFound e) {
             System.out.println(e.getMessage());
         }
     }
-    public void handleRemoveItem(Scanner scanner){
+
+    public void handleRemoveItem(Scanner scanner) {
         System.out.print("Item to remove: ");
         String choice;
         choice = scanner.nextLine();
         try {
             inv.removeItem(player, choice);
             System.out.println(choice + " has been removed from your inventory");
-        }catch (ItemNotFound e) {
+        } catch (ItemNotFound e) {
             System.out.println(e.getMessage());
         }
     }
+
+    public void printInventory() {
+        if (player.getInventory().getPlayerInventoryItems().isEmpty()) {
+            System.out.println("Your inventory is empty");
+        } else {
+            System.out.println("-----------------");
+            for (Item i : player.getInventory().getPlayerInventoryItems()) {
+                if (i instanceof Weapon) {
+                    System.out.println("- " + i.getName() + " - Damage: " + ((Weapon) i).getDamage() + " - " + ((Weapon) i).getWeaponType().toString() + " (" + i.getWeight() + " kg)");
+                } else if (i instanceof Armor) {
+                    System.out.println("- " + i.getName() + " - Resistance: " + ((Armor) i).getResistance() + " - " + ((Armor) i).getArmorType().toString() + " (" + i.getWeight() + " kg)");
+                } else {
+                    System.out.println("- " + i.getName() + " - " + ((Consumable) i).getConsumableType().toString() + " (" + i.getWeight() + " kg)");
+                }
+            }
+        }
+        System.out.println("-----------------");
+    }
+
+
+    //Sorting menu--------------------------------
+    public void printSortingMenu() {
+        System.out.println("---Sorting Menu---");
+        System.out.println("1. Sort by weight");
+        System.out.println("2. Sort by type");
+        System.out.println("3. Sort by damage");
+        System.out.println("4. Sort by resistance");
+        System.out.println("5. Sort by name");
+        System.out.println("6. Back");
+        System.out.println("-------------------");
+        System.out.print("Choice: ");
+    }
+
+    public void sortingMenu(Scanner scanner) {
+        boolean running = true;
+        String choice;
+        while (running) {
+            printSortingMenu();
+            choice = scanner.nextLine();
+            switch (choice) {
+                case "1" -> inv.sortItems(player, "weight");
+                case "2" -> inv.sortItems(player, "type");
+                case "3" -> inv.sortItems(player, "damage");
+                case "4" -> inv.sortItems(player, "resistance");
+                case "5" -> inv.sortItems(player, "name");
+                case "6" -> {
+                    running = false;
+                    System.out.println("Returning");
+                }
+            }
+        }
+    }
 }
+
+
 

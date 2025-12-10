@@ -1,27 +1,21 @@
 package models;
 
+import models.enums.ConsumableType;
+
 public class Consumable extends Item {
 
     private final boolean stackable;
-    private int quantity;
+    private final ConsumableType consumableType;
 
-    public Consumable(String name, double weight, boolean stackable) {
+    public Consumable(String name, double weight, boolean stackable, ConsumableType consumableType) {
         super(name,  weight);
         this.stackable = stackable;
+        this.consumableType = consumableType;
     }
     public boolean isStackable() {
         return stackable;
     }
-    public int getQuantity() {
-        return quantity;
-    }
-    public void addQuantity(int quantity) {
-        this.quantity += quantity;
-    }
-    public int getRequiredSlots(){
-        if(!stackable){
-            return 1;
-        }
-        return (int) Math.ceil((double) quantity / 5.0);
+    public ConsumableType getConsumableType() {
+        return consumableType;
     }
 }

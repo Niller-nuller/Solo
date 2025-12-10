@@ -1,5 +1,6 @@
 package models;
 
+
 public abstract class Item {
     private final String name;
     private final double weight;
