@@ -12,11 +12,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  ItemRepository {
+public class ItemRepository {
 
     public List<Item> initializeWorldItems() throws SQLException {
         List<Item> items = new ArrayList<Item>();
-        String sql = "SELECT * FROM Items";
+        String sql = "SELECT * FROM worlditems";
 
         try(Connection conn = DBConnect.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -46,10 +46,10 @@ public class  ItemRepository {
                 yield new Weapon(name, weight, damage, weaponType);
             }
             case "Armor" -> {
-                int armorValue = rs.getInt("armor_value");
+                int resistance = rs.getInt("resistance");
                 String armorTypeStr = rs.getString("armor_type");
                 ArmorType armorType = ArmorType.valueOf(armorTypeStr);
-                yield new Armor(name, weight, armorValue, armorType);
+                yield new Armor(name, weight, resistance, armorType);
             }
             case "Consumable" -> {
                 boolean stackable = rs.getBoolean("is_stackable");
@@ -62,29 +62,29 @@ public class  ItemRepository {
     }
 
     public Item findItemById(int itemId) {
-        String sql = "SELECT * FROM Item WHERE id = ?";
+        String sql = "SELECT * FROM worlditems WHERE id = ?";
         try(Connection conn = DBConnect.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql); {
+            PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, itemId);
                 try(ResultSet rs = stmt.executeQuery()) {
                     if(rs.next()) {
                         return createItemFromResultSet(rs);
                     }
                 }
-            }
-        }catch (SQLException e){
-            throw new RuntimeException("oh no in items");
+
+        }catch (SQLException e) {
+            throw new RuntimeException("Database error in ItemRepository", e);
         }
         return null;
     }
 
-    public int findItemByName(Connection conn, String itemName) throws SQLException{
-        String sql = "SELECT id FROM Items WHERE name = ?";
-        try(PreparedStatement stmt = conn.prepareStatement(sql)){
+    public int findItemByName(Connection conn, String itemName) throws SQLException {
+        String sql = "SELECT id FROM worlditems WHERE name = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, itemName);
-            try(ResultSet rs = stmt.executeQuery()){
-                if(rs.next()){
-                    int id = rs.getInt("id");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
                 }
             }
         }

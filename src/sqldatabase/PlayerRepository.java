@@ -14,7 +14,7 @@ public class PlayerRepository {
 
     public List<Player> initializePlayers() throws SQLException {
         List<Player> players = new ArrayList<>();
-        String sql = "SELECT name FROM players";
+        String sql = "SELECT id, name FROM players";
 
         try(Connection conn = DBConnect.getConnection()){
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -29,7 +29,7 @@ public class PlayerRepository {
                 }
             }
             }catch (SQLException e){
-                throw new RuntimeException("oh no");
+                throw new RuntimeException("Could not fetch players from database");
         }return players;
     }
     private void initializePlayerInventory(Connection conn, Player p, int playerId) throws SQLException {
@@ -58,36 +58,40 @@ public class PlayerRepository {
 
             int playerId = getPlayerId(conn, p.getName());
             clearPlayerInventory(conn, playerId);
-
+            saveToPlayerInventory(conn, playerId, p.getInventory().getPlayerInventoryItems());
+            conn.commit();
+        } catch (SQLException e){
+            throw new RuntimeException("Save failed");
         }
     }
     private int getPlayerId(Connection conn, String playerName) throws SQLException {
-        String selectSQL = "SELECT player_id FROM players WHERE name = ?";
+        String selectSQL = "SELECT id FROM players WHERE name = ?";
         try(PreparedStatement stmt = conn.prepareStatement(selectSQL)){
             stmt.setString(1, playerName);
             try(ResultSet rs = stmt.executeQuery()){
                 if(rs.next()){
-                    return rs.getInt("player_id");
+                    return rs.getInt("id");
                 }
             }
         }
+
         String insertSQL = "INSERT INTO players (name) VALUES (?)";
         try(PreparedStatement stmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)){
             stmt.setString(1, playerName);
             stmt.executeUpdate();
             try(ResultSet rs = stmt.getGeneratedKeys()){
                 if(rs.next()){
-                    return rs.getInt("player_id");
+                    return rs.getInt(1);
                 }
                 else {
-                    throw new SQLException();
+                    throw new SQLException("Could not generate new player");
                 }
             }
         }
     }
     private void clearPlayerInventory(Connection conn, int playerId) throws SQLException {
-        String delteSQL = "DELETE FROM PlayerInventory WHERE player_id = ?";
-        try(PreparedStatement stmt = conn.prepareStatement(delteSQL)){
+        String deleteSQL = "DELETE FROM PlayerInventory WHERE player_id = ?";
+        try(PreparedStatement stmt = conn.prepareStatement(deleteSQL)){
             stmt.setInt(1, playerId);
             stmt.executeUpdate();
         }
@@ -100,13 +104,12 @@ public class PlayerRepository {
             for (Item item : items) {
                 int itemId = itemRepository.findItemByName(conn, item.getName());
                 if(itemId == -1){
-                    continue;
+                    stmt.setInt(1, PlayerId);
+                    stmt.setInt(2, itemId);
+                    stmt.setInt(3, 1);
+                    stmt.setInt(4, slotIndex++);
+                    stmt.addBatch();
                 }
-                stmt.setInt(1, PlayerId);
-                stmt.setInt(2, itemId);
-                stmt.setInt(3, 1);
-                stmt.setInt(4, slotIndex++);
-                stmt.addBatch();
             }
             stmt.executeBatch();
         }

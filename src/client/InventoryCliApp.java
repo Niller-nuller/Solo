@@ -60,8 +60,8 @@ public class InventoryCliApp {
         System.out.println("---Main menu---");
         System.out.println("1. Create new player");
         System.out.println("2. Log in");
-        System.out.println("4. Save");
-        System.out.println("3. Exit");
+        System.out.println("3. Save");
+        System.out.println("4. Exit");
         System.out.println("---------------");
         System.out.print("Choice: ");
     }
