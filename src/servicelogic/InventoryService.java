@@ -27,6 +27,7 @@ public class InventoryService {
             players.addAll(playerRepository.initializePlayers());
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
