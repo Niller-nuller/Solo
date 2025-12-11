@@ -6,14 +6,21 @@ import exceptions.MaxWeightReached;
 import exceptions.PlayerNameProblem;
 import models.*;
 import servicelogic.InventoryService;
+import sqldatabase.DBConnect;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class InventoryCliApp {
     private final InventoryService inv = new InventoryService();
     private Player player;
 
-    static void main(String[] args) {
+    public InventoryCliApp() throws SQLException {
+    }
+
+
+    static void main(String[] args) throws SQLException {
         new InventoryCliApp().mainMenu();
     }
 
@@ -36,7 +43,10 @@ public class InventoryCliApp {
                         handleLogInPlayer(scanner);
                     }
 
-                    case "3" -> {
+                    case "3" -> { handleSave();
+
+                    }
+                    case "4" -> {
                         running = false;
                         System.out.println("Shutting down");
                     }
@@ -50,6 +60,7 @@ public class InventoryCliApp {
         System.out.println("---Main menu---");
         System.out.println("1. Create new player");
         System.out.println("2. Log in");
+        System.out.println("4. Save");
         System.out.println("3. Exit");
         System.out.println("---------------");
         System.out.print("Choice: ");
@@ -76,6 +87,9 @@ public class InventoryCliApp {
         } catch (PlayerNameProblem e) {
             System.out.println(e.getMessage());
         }
+    }
+    private void handleSave(){
+
     }
 
     //Game Menu-----------------------------------------------------------------------------------
@@ -108,7 +122,7 @@ public class InventoryCliApp {
 
 
     //WorldItem menu---------------------------------------------------------------
-    public void worldItemMenu(Scanner scanner) {
+    private void worldItemMenu(Scanner scanner) {
         boolean running = true;
         String choice;
         while (running) {
@@ -126,7 +140,7 @@ public class InventoryCliApp {
         }
     }
 
-    public void printWorldItemMenu() {
+    private void printWorldItemMenu() {
         System.out.println("---World Item Menu---");
         System.out.println("1. See all world items");
         System.out.println("2. Find items");
@@ -173,7 +187,7 @@ public class InventoryCliApp {
     }
 
     //Inventory Menu-----------------------------------------------------------------
-    public void inventoryMenu(Scanner scanner) {
+    private void inventoryMenu(Scanner scanner) {
         boolean running = true;
         String choice;
         while (running) {
@@ -188,7 +202,8 @@ public class InventoryCliApp {
                 case "1" -> handleAddItem(scanner);
                 case "2" -> handleRemoveItem(scanner);
                 case "3" -> sortingMenu(scanner);
-                case "4" -> {
+                case "4" -> handleIncreaseSlots(scanner);
+                case "5" -> {
                     running = false;
                     System.out.println("Returning");
                 }
@@ -196,17 +211,18 @@ public class InventoryCliApp {
         }
     }
 
-    public void printInventoryMenu() {
+    private void printInventoryMenu() {
         System.out.println("---Inventory Menu---");
         System.out.println("1. Add item");
         System.out.println("2. Remove item");
         System.out.println("3. Sort items");
-        System.out.println("4. Back");
+        System.out.println("4. Increase slots amount");
+        System.out.println("5. Back");
         System.out.println("-------------------");
         System.out.print("Choice: ");
     }
 
-    public void handleAddItem(Scanner scanner) {
+    private void handleAddItem(Scanner scanner) {
         System.out.print("Item to add: ");
         String choice;
         choice = scanner.nextLine();
@@ -222,7 +238,7 @@ public class InventoryCliApp {
         }
     }
 
-    public void handleRemoveItem(Scanner scanner) {
+    private void handleRemoveItem(Scanner scanner) {
         System.out.print("Item to remove: ");
         String choice;
         choice = scanner.nextLine();
@@ -234,7 +250,24 @@ public class InventoryCliApp {
         }
     }
 
-    public void printInventory() {
+    private void handleIncreaseSlots(Scanner scanner) {
+        System.out.print("----Free slots----");
+        System.out.print("Do you wish to increase your slots?");
+        System.out.print("Yes or no?");
+        System.out.print("-------------------");
+        String choice;
+        choice = scanner.nextLine();
+        if (choice.equalsIgnoreCase("Yes")) {
+            try {
+                player.getInventory().getInventorySlots().setCurrentMaxSlots();
+                System.out.println("Congratulations! Your max slot limit has increased by 32");
+            } catch (MaxSlotsReached e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void printInventory() {
         if (player.getInventory().getPlayerInventoryItems().isEmpty()) {
             System.out.println("Your inventory is empty");
         } else {
@@ -254,7 +287,7 @@ public class InventoryCliApp {
 
 
     //Sorting menu--------------------------------
-    public void printSortingMenu() {
+    private void printSortingMenu() {
         System.out.println("---Sorting Menu---");
         System.out.println("1. Sort by weight");
         System.out.println("2. Sort by type");
@@ -266,7 +299,7 @@ public class InventoryCliApp {
         System.out.print("Choice: ");
     }
 
-    public void sortingMenu(Scanner scanner) {
+    private void sortingMenu(Scanner scanner) {
         boolean running = true;
         String choice;
         while (running) {

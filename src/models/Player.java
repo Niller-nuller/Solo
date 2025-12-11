@@ -1,8 +1,8 @@
 package models;
 
 public class Player {
-    private String name;
-    private Inventory inventory;
+    private final String name;
+    private final Inventory inventory;
 
     public Player(String name){
         this.name = name;

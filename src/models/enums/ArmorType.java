@@ -5,5 +5,6 @@ public enum ArmorType {
     Shoulders,
     Chestpiece,
     Legs,
-    Boots
+    Boots,
+    Offhand
 }

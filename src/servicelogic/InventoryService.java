@@ -2,11 +2,10 @@ package servicelogic;
 
 import exceptions.*;
 import models.*;
+import sqldatabase.ItemRepository;
+import sqldatabase.PlayerRepository;
 
-import static models.enums.ArmorType.*;
-import static models.enums.WeaponType.*;
-import static models.enums.ConsumableType.*;
-
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,9 +16,18 @@ public class InventoryService {
     private final List<Player> players = new ArrayList<>();
     private final List<Item> specificWorldItems = new ArrayList<>();
 
-    public InventoryService() {
-        defaultItems();
-        defaultPlayer();
+    private final ItemRepository itemRepository = new ItemRepository();
+    private final PlayerRepository playerRepository = new PlayerRepository();
+
+    public InventoryService() throws SQLException { initializeGame();}
+
+    private void initializeGame() throws SQLException {
+        try {
+            worldItems.addAll(itemRepository.initializeWorldItems());
+            players.addAll(playerRepository.initializePlayers());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     //------------------------------------------------Player Management-----------------------------------------------------
@@ -97,23 +105,6 @@ public class InventoryService {
 //---------------------------------------Slots Management---------------------------------------------------------------
     public void increasePlayerMaxSlots(Player p) {
         p.getInventory().getInventorySlots().setCurrentMaxSlots();
-    }
-
-    //----------------------------------------------World Items Initialization----------------------------------------------
-    public void defaultItems() {
-        worldItems.add(new Weapon("Short Sword", 2.5, 10, MainHand));
-        worldItems.add(new Weapon("Short Axe", 2.5, 7, OffHand));
-        worldItems.add(new Armor("Helmet", 2, 2, Helmet));
-        worldItems.add(new Armor("Chestplate", 8, 6, Chestpiece));
-        worldItems.add(new Consumable("Health Potion", 0.2, true, Drinkable));
-        worldItems.add(new Consumable("Arrow", 0.1, true, Ammo));
-        worldItems.add(new Consumable("Rock", 0.4, true, Throwable));
-        worldItems.add(new Weapon("Test Sword", 49.9999, 67, MainHand));
-        worldItems.add(new Weapon("Great Sword", 5, 20, TwoHand));
-    }
-
-    public void defaultPlayer() {
-        players.add(new Player("Test"));
     }
 
     //------------------------------------------------Displays--------------------------------------------------------------

@@ -1,15 +1,30 @@
 package sqldatabase;
 
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class DBConnect {
-    private static final String URL = "jdbc:mysql://localhost:3306/inventory_db?serverTimezone=UTC";
-    private static final String USER = "root";
-    private static final String PASSWORD = "PLACEHOLDER";
+    public static Connection getConnection() {
+        Properties prop = new Properties();
+        try(FileInputStream inputStream = new FileInputStream(".env")){
+            prop.load(inputStream);
+        } catch (Exception e){
+            e.getMessage();
+            return null;
+        }
+        String url = prop.getProperty("url");
+        String user = prop.getProperty("user");
+        String password = prop.getProperty("password");
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        Connection conn = null;
+        try{
+            conn = DriverManager.getConnection(url, user, password);
+
+        } catch(SQLException e){
+            e.getMessage();
+        }return conn;
     }
 }
