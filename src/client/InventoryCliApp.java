@@ -4,7 +4,7 @@ import exceptions.ItemNotFound;
 import exceptions.MaxSlotsReached;
 import exceptions.MaxWeightReached;
 import exceptions.PlayerNameProblem;
-import models.Player;
+import models.*;
 import servicelogic.InventoryService;
 
 import java.util.Scanner;
@@ -13,9 +13,8 @@ public class InventoryCliApp {
     private final InventoryService inv = new InventoryService();
     private Player player;
 
-    void main(String[] args) {
-        //sql stuff
-        mainMenu();
+    static void main(String[] args) {
+        new InventoryCliApp().mainMenu();
     }
 
 
@@ -23,10 +22,10 @@ public class InventoryCliApp {
     private void mainMenu() {
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
+
             while (running) {
                 printMenu();
-                String choice;
-                choice = scanner.nextLine();
+                String choice = scanner.nextLine();
 
                 switch (choice) {
                     case "1" -> {
@@ -52,7 +51,7 @@ public class InventoryCliApp {
         System.out.println("1. Create new player");
         System.out.println("2. Log in");
         System.out.println("3. Exit");
-        System.out.println("------");
+        System.out.println("---------------");
         System.out.print("Choice: ");
     }
 
@@ -89,7 +88,7 @@ public class InventoryCliApp {
 
             switch (choice) {
                 case "1" -> inventoryMenu(scanner);
-                case "2" -> handleDisplayWorldItems();
+                case "2" -> worldItemMenu(scanner);
                 case "3" -> {
                     running = false;
                     System.out.println("Returning");
@@ -98,17 +97,79 @@ public class InventoryCliApp {
         }
     }
 
-    private static void printGameMenu() {
+    private void printGameMenu() {
         System.out.println("---Game Menu---");
         System.out.println("1. See inventory");
         System.out.println("2. See all items");
-        System.out.println("3. Exit");
-        System.out.println("------");
+        System.out.println("3. Back");
+        System.out.println("---------------");
+        System.out.print("Choice: ");
+    }
+
+
+    //WorldItem menu---------------------------------------------------------------
+    public void worldItemMenu(Scanner scanner) {
+        boolean running = true;
+        String choice;
+        while (running) {
+            printWorldItemMenu();
+            choice = scanner.nextLine();
+            switch (choice) {
+                case "1" -> handleDisplayWorldItems();
+                case "2" -> handleFindWorldItems(scanner);
+                case "3" -> {
+                    running = false;
+                    System.out.println("Returning");
+                }
+            }
+
+        }
+    }
+
+    public void printWorldItemMenu() {
+        System.out.println("---World Item Menu---");
+        System.out.println("1. See all world items");
+        System.out.println("2. Find items");
+        System.out.println("3. Back");
+        System.out.println("---------------");
         System.out.print("Choice: ");
     }
 
     private void handleDisplayWorldItems() {
-        inv.displayWorldItems();
+        System.out.println("Available items-");
+        for (Item i : inv.getWorldItems()) {
+            if (i instanceof Weapon) {
+                System.out.println("- " + i.getName() + " -  Damage: " + ((Weapon) i).getDamage() + " - " + ((Weapon) i).getWeaponType().toString() + " (" + i.getWeight() + " kg)");
+            } else if (i instanceof Armor) {
+                System.out.println("- " + i.getName() + " - Resistance: " + ((Armor) i).getResistance() + " - " + ((Armor) i).getArmorType().toString() + " (" + i.getWeight() + " kg)");
+            } else {
+                System.out.println("- " + i.getName() + " - " + ((Consumable) i).getConsumableType().toString() + " (" + i.getWeight() + " kg)");
+            }
+        }
+    }
+
+    private void handleFindWorldItems(Scanner scanner) {
+        System.out.println("---------------");
+        System.out.println("Either write the name of an item to find, or an attribute(armor, weapon, consumable) of an item");
+        System.out.println("For attributes write an @ before the attribute");
+        System.out.println("---------------");
+        System.out.print("Choice: ");
+        String choice;
+        choice = scanner.nextLine();
+        try {
+            inv.findItems(choice);
+            for (Item i : inv.getSpecificWorldItemByName()) {
+                if (i instanceof Weapon) {
+                    System.out.println("- " + i.getName() + " -  Damage: " + ((Weapon) i).getDamage() + " - " + ((Weapon) i).getWeaponType().toString() + " (" + i.getWeight() + " kg)");
+                } else if (i instanceof Armor) {
+                    System.out.println("- " + i.getName() + " - Resistance: " + ((Armor) i).getResistance() + " - " + ((Armor) i).getArmorType().toString() + " (" + i.getWeight() + " kg)");
+                } else {
+                    System.out.println("- " + i.getName() + " - " + ((Consumable) i).getConsumableType().toString() + " (" + i.getWeight() + " kg)");
+                }
+            }
+        } catch (ItemNotFound e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     //Inventory Menu-----------------------------------------------------------------
@@ -116,8 +177,9 @@ public class InventoryCliApp {
         boolean running = true;
         String choice;
         while (running) {
-            inv.displayPlayerInventory(player);
-            System.out.println(player.getInventory().getInventorySlots().getUsedSlots());
+            printInventory();
+            System.out.println("Slots used: " + player.getInventory().getInventorySlots().getUsedSlots() + "/" + player.getInventory().getInventorySlots().getCurrentSlots());
+            System.out.println("Weight used: " + player.getInventory().getCurrentPlayerCarryWeight() + "/" + player.getInventory().getMaxPlayerCarryWeight() + "Kg");
             printInventoryMenu();
 
             choice = scanner.nextLine();
@@ -125,7 +187,8 @@ public class InventoryCliApp {
             switch (choice) {
                 case "1" -> handleAddItem(scanner);
                 case "2" -> handleRemoveItem(scanner);
-                case "3" -> {
+                case "3" -> sortingMenu(scanner);
+                case "4" -> {
                     running = false;
                     System.out.println("Returning");
                 }

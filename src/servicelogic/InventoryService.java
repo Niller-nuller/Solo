@@ -3,14 +3,25 @@ package servicelogic;
 import exceptions.*;
 import models.*;
 
+import static models.enums.ArmorType.*;
+import static models.enums.WeaponType.*;
+import static models.enums.ConsumableType.*;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class InventoryService {
 
     private final List<Item> worldItems = new ArrayList<>();
     private final List<Player> players = new ArrayList<>();
-    public InventoryService() {defaultItems(); defaultPlayer();}
+    private final List<Item> specificWorldItems = new ArrayList<>();
+
+    public InventoryService() {
+        defaultItems();
+        defaultPlayer();
+    }
+
     //------------------------------------------------Player Management-----------------------------------------------------
     public Player createPlayer(String name) throws PlayerNameProblem { //To be called in the client class.
         if (getPlayerByName(name) != null) { //Calls the method getPlayerByName to either get a null or an object.
@@ -22,69 +33,69 @@ public class InventoryService {
         }
     }
 
-    public Player loginPlayer(String name) throws PlayerNameProblem{ //This method is to be called from the client class.
+    public Player loginPlayer(String name) throws PlayerNameProblem { //This method is to be called from the client class.
         if (getPlayerByName(name) == null) {
             throw new PlayerNameProblem(name + " doesn't exist");
-        }
-        else{
+        } else {
             return getPlayerByName(name);
         }
     }
 
-    private Player getPlayerByName(String name){
-        for (Player p : players){
-            if (p.getName().equalsIgnoreCase(name)){
+    private Player getPlayerByName(String name) {
+        for (Player p : players) {
+            if (p.getName().equalsIgnoreCase(name)) {
                 return p;
             }
         }
         return null;
     }
+
     //This layer of code in only to used to either create or login the player.
 //------------------------------------------------Item Management-------------------------------------------------------
-    public void addItem(Player p, String itemName) throws ItemNotFound,MaxWeightReached,MaxSlotsReached{
+    public void addItem(Player p, String itemName) throws ItemNotFound, MaxWeightReached, MaxSlotsReached {
         Item findItem = getWorldItemByName(itemName);
-        if (findItem == null){
-            throw new ItemNotFound(itemName);
+        if (findItem == null) {
+            throw new ItemNotFound(itemName + " not found");
         }
         checkInventory(p, findItem);
 
         p.getInventory().addItem(findItem);
     }
 
-    public void removeItem(Player p, String itemName) throws ItemNotFound{ // This method is to be called from the client class.
+    public void removeItem(Player p, String itemName) throws ItemNotFound { // This method is to be called from the client class.
         Item findItem = getWorldItemByName(itemName);
         if (findItem == null) {
             throw new ItemNotFound(itemName + " not found");
-        }
-        else{
+        } else {
             p.getInventory().removeItem(findItem);
         }
     }
 
-    private Item getWorldItemByName(String name){
-        for (Item i : worldItems){
-            if(i.getName().equalsIgnoreCase(name)){
+    private Item getWorldItemByName(String name) {
+        for (Item i : worldItems) {
+            if (i.getName().equalsIgnoreCase(name)) {
                 return i;
             }
-        }return null;
+        }
+        return null;
     }
 
-    public void checkInventory(Player p, Item item) throws MaxWeightReached, MaxSlotsReached{
+    public void checkInventory(Player p, Item item) throws MaxWeightReached, MaxSlotsReached {
         int availablePlayerSlots = p.getInventory().getInventorySlots().getCurrentSlots();
         int usedPlayerSlots = p.getInventory().getInventorySlots().getUsedSlots();
         double usedPlayerWeight = p.getInventory().getCurrentPlayerCarryWeight() + item.getWeight();
         double maxPlayerWeight = p.getInventory().getMaxPlayerCarryWeight();
 
-        if(usedPlayerSlots >= availablePlayerSlots){
-            throw new MaxSlotsReached(usedPlayerSlots + " out of " + availablePlayerSlots + " slots filled");
-        }
-        else if(usedPlayerWeight >= maxPlayerWeight){
+        if (usedPlayerSlots >= availablePlayerSlots) {
+            throw new MaxSlotsReached("Slot limit reached.");
+        } else if (usedPlayerWeight >= maxPlayerWeight) {
             throw new MaxWeightReached("Weight limit reached.");
         }
     }
+
     // This layer is for adding and removing items from the player. It assumes a player is logged in.
 //---------------------------------------Slots Management---------------------------------------------------------------
-    public void increasePlayerMaxSlots(Player p){
+    public void increasePlayerMaxSlots(Player p) {
         p.getInventory().getInventorySlots().setCurrentMaxSlots();
     }
 
@@ -100,33 +111,93 @@ public class InventoryService {
         worldItems.add(new Weapon("Test Sword", 49.9999, 67, MainHand));
         worldItems.add(new Weapon("Great Sword", 5, 20, TwoHand));
     }
-    public void defaultPlayer(){
+
+    public void defaultPlayer() {
         players.add(new Player("Test"));
     }
+
     //------------------------------------------------Displays--------------------------------------------------------------
-    public void displayWorldItems(){
-        System.out.println("--- Available items ---");
-        for (Item i : worldItems){
-            System.out.println("- " + i.getName() + " (" + i.getWeight() + " kg)");
+    public List<Item> getWorldItems() {
+        return worldItems;
+    }
+    public List<Item> getSpecificWorldItemByName() {
+        return specificWorldItems;
+    }
+
+    //------------------------------------------------Sorting and finding--------------------------------------------------
+    public void sortItems(Player p, String criteria) {
+        List<Item> items = p.getInventory().getPlayerInventoryItems();
+
+        switch (criteria.toLowerCase()) {
+            case "name":
+                items.sort(Comparator.comparing(Item::getName, String.CASE_INSENSITIVE_ORDER));
+                break;
+            case "weight":
+                items.sort(Comparator.comparing(Item::getWeight));
+                break;
+            case "type":
+                items.sort(Comparator.comparing(item -> item.getClass().getSimpleName(), String.CASE_INSENSITIVE_ORDER));
+                break;
+            case "damage":
+                items.sort((i1, i2) -> {
+                    if (i1 instanceof Weapon w1 && i2 instanceof Weapon w2) {
+                        return Integer.compare(w2.getDamage(), w1.getDamage());
+                    } else if (i1 instanceof Weapon) {
+                        return -1;
+                    } else if (i2 instanceof Weapon) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+                break;
+            case "resistance":
+                items.sort((i1, i2) -> {
+                    if (i1 instanceof Armor w1 && i2 instanceof Armor w2) {
+                        return Integer.compare(w2.getResistance(), w1.getResistance());
+                    } else if (i1 instanceof Armor) {
+                        return -1;
+                    } else if (i2 instanceof Armor) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+                break;
         }
     }
-    public void displayPlayers(){
-        System.out.println("--- Players ---");
-        for (Player p : players){
-            System.out.println("- " + p.getName());
-        }
-    }
-    public void displayPlayerInventory(Player p){
-        if(p.getInventory().getPlayerInventoryItems().isEmpty()){
-            System.out.println("Your inventory is empty");
-        }
-        else{
-            System.out.println("-----------------");
-            for (Item i : p.getInventory().getPlayerInventoryItems()){
-                System.out.println("- " + i.getName() + " (" + i.getWeight() + " kg)");
+    public void findItems(String criteria) throws ItemNotFound {
+        criteria = criteria.toLowerCase();
+        specificWorldItems.clear();
+        for (Item i : worldItems) {
+            if (criteria.isEmpty()){
+                throw new ItemNotFound("Write something");
+            } else {
+                if (criteria.contains("@")) {
+                    switch (criteria) {
+                        case "@weapon" -> {
+                            if (i instanceof Weapon) {
+                                specificWorldItems.add(i);
+                            }
+                        }
+                        case "@armor" -> {
+                            if (i instanceof Armor) {
+                                specificWorldItems.add(i);
+                            }
+                        }
+                        case "@consumable" -> {
+                            if (i instanceof Consumable) {
+                                specificWorldItems.add(i);
+                            }
+                        }
+                    }
+                } else if (i.getName().toLowerCase().contains(criteria)) {
+                    specificWorldItems.add(i);
+                }
             }
-            System.out.println("---------------");
+        }
+        if (specificWorldItems.isEmpty()){
+            throw new ItemNotFound("No items found");
         }
     }
 }
-
