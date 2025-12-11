@@ -43,10 +43,7 @@ public class InventoryCliApp {
                         handleLogInPlayer(scanner);
                     }
 
-                    case "3" -> { handleSave();
-
-                    }
-                    case "4" -> {
+                    case "3" -> {
                         running = false;
                         System.out.println("Shutting down");
                     }
@@ -60,8 +57,7 @@ public class InventoryCliApp {
         System.out.println("---Main menu---");
         System.out.println("1. Create new player");
         System.out.println("2. Log in");
-        System.out.println("3. Save");
-        System.out.println("4. Exit");
+        System.out.println("3. Exit");
         System.out.println("---------------");
         System.out.print("Choice: ");
     }
@@ -88,9 +84,7 @@ public class InventoryCliApp {
             System.out.println(e.getMessage());
         }
     }
-    private void handleSave(){
 
-    }
 
     //Game Menu-----------------------------------------------------------------------------------
     public void gameMenu(Scanner scanner) {
@@ -103,7 +97,8 @@ public class InventoryCliApp {
             switch (choice) {
                 case "1" -> inventoryMenu(scanner);
                 case "2" -> worldItemMenu(scanner);
-                case "3" -> {
+                case "3" -> handleSave();
+                case "4" -> {
                     running = false;
                     System.out.println("Returning");
                 }
@@ -115,9 +110,14 @@ public class InventoryCliApp {
         System.out.println("---Game Menu---");
         System.out.println("1. See inventory");
         System.out.println("2. See all items");
-        System.out.println("3. Back");
+        System.out.println("3. Save");;
+        System.out.println("4. Back");
         System.out.println("---------------");
         System.out.print("Choice: ");
+    }
+
+    private void handleSave(){
+        inv.savePlayer(player);
     }
 
 
@@ -251,10 +251,11 @@ public class InventoryCliApp {
     }
 
     private void handleIncreaseSlots(Scanner scanner) {
-        System.out.print("----Free slots----");
-        System.out.print("Do you wish to increase your slots?");
-        System.out.print("Yes or no?");
-        System.out.print("-------------------");
+        System.out.println("----Free slots----");
+        System.out.println("Do you wish to increase your slots?");
+        System.out.println("Yes or no?");
+        System.out.println("-------------------");
+        System.out.print("Choice: ");
         String choice;
         choice = scanner.nextLine();
         if (choice.equalsIgnoreCase("Yes")) {

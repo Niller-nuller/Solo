@@ -6,5 +6,5 @@ public enum ArmorType {
     Chestpiece,
     Legs,
     Boots,
-    Offhand
+    OffHand
 }

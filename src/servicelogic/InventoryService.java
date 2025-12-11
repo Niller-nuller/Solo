@@ -2,6 +2,7 @@ package servicelogic;
 
 import exceptions.*;
 import models.*;
+import sqldatabase.DBConnect;
 import sqldatabase.ItemRepository;
 import sqldatabase.PlayerRepository;
 
@@ -20,6 +21,8 @@ public class InventoryService {
     private final PlayerRepository playerRepository = new PlayerRepository();
 
     public InventoryService() throws SQLException { initializeGame();}
+
+
 
     private void initializeGame() throws SQLException {
         try {
@@ -59,6 +62,13 @@ public class InventoryService {
         return null;
     }
 
+    public void savePlayer(Player player) {
+        try {
+            playerRepository.savePlayerAndInventory(player);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     //This layer of code in only to used to either create or login the player.
 //------------------------------------------------Item Management-------------------------------------------------------
     public void addItem(Player p, String itemName) throws ItemNotFound, MaxWeightReached, MaxSlotsReached {
@@ -192,4 +202,5 @@ public class InventoryService {
             throw new ItemNotFound("No items found");
         }
     }
+
 }

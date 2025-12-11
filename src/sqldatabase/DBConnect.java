@@ -20,12 +20,11 @@ public class DBConnect {
         String url = prop.getProperty("url");
         String user = prop.getProperty("user");
         String password = prop.getProperty("password");
-        
+
 
         Connection conn = null;
         try{
             conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Database connection established");
         } catch(SQLException e){
             System.out.println("failed to connect to database:");
             e.printStackTrace();

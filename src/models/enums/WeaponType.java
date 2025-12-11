@@ -3,5 +3,5 @@ package models.enums;
 public enum WeaponType {
     MainHand,
     OffHand,
-    TwoHand
+    TwoHanded
 }

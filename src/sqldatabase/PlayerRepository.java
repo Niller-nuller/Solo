@@ -28,8 +28,8 @@ public class PlayerRepository {
                     players.add(player);
                 }
             }
-            }catch (SQLException e){
-                throw new RuntimeException("Could not fetch players from database");
+        }catch (SQLException e){
+            throw new RuntimeException("Could not fetch players from database");
         }return players;
     }
     private void initializePlayerInventory(Connection conn, Player p, int playerId) throws SQLException {
@@ -38,7 +38,7 @@ public class PlayerRepository {
         try(PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, playerId);
             try(ResultSet rs = stmt.executeQuery()){
-                 while (rs.next()) {
+                while (rs.next()) {
                     int itemId = rs.getInt("item_id");
                     int quantity = rs.getInt("quantity");
 
@@ -48,7 +48,7 @@ public class PlayerRepository {
                             p.getInventory().addItem(item);
                         }
                     }
-                 }
+                }
             }
         }
     }
@@ -114,6 +114,4 @@ public class PlayerRepository {
             stmt.executeBatch();
         }
     }
-
-
 }
