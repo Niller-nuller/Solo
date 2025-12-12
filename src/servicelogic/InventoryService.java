@@ -35,24 +35,26 @@ public class InventoryService {
     }
 
     //------------------------------------------------Player Management-----------------------------------------------------
-    public Player createPlayer(String name) throws PlayerNameProblem { //To be called in the client class.
-        if (getPlayerByName(name) != null) { //Calls the method getPlayerByName to either get a null or an object.
+
+    //Used to create a Player object, while making sure the objects name us unique, and then adds it to the players list and then returning it.
+    public Player createPlayer(String name) throws PlayerNameProblem {
+        if (getPlayerByName(name) != null) {
             throw new PlayerNameProblem(name + " already exist");
-        } else { //Creates the new player object.
+        } else {
             Player p = new Player(name);
             players.add(p);
             return p;
         }
     }
-
-    public Player loginPlayer(String name) throws PlayerNameProblem { //This method is to be called from the client class.
+    //Used to return an already existing player object.
+    public Player loginPlayer(String name) throws PlayerNameProblem {
         if (getPlayerByName(name) == null) {
             throw new PlayerNameProblem(name + " doesn't exist");
         } else {
             return getPlayerByName(name);
         }
     }
-
+    //Used by loginPlayer to check the playerList, for player objects with a corresponding name.
     private Player getPlayerByName(String name) {
         for (Player p : players) {
             if (p.getName().equalsIgnoreCase(name)) {
