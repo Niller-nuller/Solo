@@ -9,6 +9,7 @@ public abstract class Item {
         this.name = name;
         this.weight = weight;
     }
+    //--This classes, setters and getters.---------------------------------------------------------------------------
     public String getName(){
         return name;
     }

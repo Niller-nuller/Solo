@@ -10,18 +10,13 @@ public class Slots {
 
 
     public Slots(){}
+    //--This classes, setters and getters.---------------------------------------------------------------------------
+    public int getCurrentSlots(){return this.currentSlots;}
 
-    public int getCurrentSlots(){
-        return this.currentSlots;
-    }
+    public int getUsedSlots(){return this.usedSlots;}
 
-    public int getUsedSlots(){
-        return this.usedSlots;
-    }
+    public void setUsedSlots(int amount){this.usedSlots = amount;}
 
-    public void setUsedSlots(int amount){
-        this.usedSlots = amount;
-    }
 
     public void setCurrentMaxSlots() throws MaxSlotsReached {
         if(this.currentSlots >= maxSlots){

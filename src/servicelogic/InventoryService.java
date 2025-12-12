@@ -12,19 +12,19 @@ import java.util.Comparator;
 import java.util.List;
 
 public class InventoryService {
-
-    private final List<Item> worldItems = new ArrayList<>();
-    private final List<Player> players = new ArrayList<>();
+    //Different lists, to keep track of objects data.
+    private final List<Item> worldItems = new ArrayList<>(); //Functions as our default List of all items in the legends of code craft.
+    private final List<Player> players = new ArrayList<>(); //Functions
     private final List<Item> specificWorldItems = new ArrayList<>();
 
     private final ItemRepository itemRepository = new ItemRepository();
     private final PlayerRepository playerRepository = new PlayerRepository();
 
-    public InventoryService() throws SQLException { initializeGame();}
+    public InventoryService() { initializeGame();}
 
 
 
-    private void initializeGame() throws SQLException {
+    private void initializeGame() {
         try {
             worldItems.addAll(itemRepository.initializeWorldItems());
             players.addAll(playerRepository.initializePlayers());
@@ -99,7 +99,7 @@ public class InventoryService {
         return null;
     }
 
-    public void checkInventory(Player p, Item item) throws MaxWeightReached, MaxSlotsReached {
+    private void checkInventory(Player p, Item item) throws MaxWeightReached, MaxSlotsReached {
         int availablePlayerSlots = p.getInventory().getInventorySlots().getCurrentSlots();
         int usedPlayerSlots = p.getInventory().getInventorySlots().getUsedSlots();
         double usedPlayerWeight = p.getInventory().getCurrentPlayerCarryWeight() + item.getWeight();

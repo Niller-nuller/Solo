@@ -8,6 +8,7 @@ public class Player {
         this.name = name;
         this.inventory = new Inventory();
     }
+    //--This classes, setters and getters.---------------------------------------------------------------------------
     public String getName(){
         return this.name;
     }

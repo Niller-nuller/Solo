@@ -12,6 +12,7 @@ public class Armor extends Item {
         this.resistance = resistance;
         this.armorType = armorType;
     }
+    //--This classes, setters and getters.---------------------------------------------------------------------------
     public int getResistance() {
         return resistance;
     }

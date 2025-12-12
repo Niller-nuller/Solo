@@ -12,6 +12,9 @@ public class PlayerRepository {
 
     public PlayerRepository() {}
 
+//-----------------------------------Player initialising-----------------------------------------
+
+    //This method is used load in information about our player table in our sql server.
     public List<Player> initializePlayers() throws SQLException {
         List<Player> players = new ArrayList<>();
         String sql = "SELECT id, name FROM players";
@@ -32,6 +35,7 @@ public class PlayerRepository {
             throw new RuntimeException("Could not fetch players from database");
         }return players;
     }
+    //This method is used to load in the correspondent inventory for the player object.
     private void initializePlayerInventory(Connection conn, Player p, int playerId) throws SQLException {
         String sql = "SELECT item_id, quantity FROM FROM PlayerInventory WHERE player_id = ? ORDER BY slot_index";
 
@@ -52,6 +56,8 @@ public class PlayerRepository {
             }
         }
     }
+    //----------------------------Player and inventory saving-----------------------------------------------------
+    //This method is used to save the player and the players inventory, to the sql server.
     public void savePlayerAndInventory(Player p) throws SQLException {
         try(Connection conn = DBConnect.getConnection()){
             conn.setAutoCommit(false);
@@ -114,4 +120,5 @@ public class PlayerRepository {
             stmt.executeBatch();
         }
     }
+//----------------------------------------------------------------------------------------------------------------------
 }

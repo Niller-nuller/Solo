@@ -35,26 +35,40 @@ public class Inventory {
         playerInventoryItems.add(item);
         recalculateWeightAndSlots();
     }
-
+    //This method is used whenever the player object, adds or removes an item.
     public void recalculateWeightAndSlots(){
+        //It starts with creating to local attribute, for totalWeight and usedSlots.
+        //It uses double and int variables, witch corresponds with weight and slots variables.
         double totalWeight = 0.00;
         int usedSlots = 0;
-
+        //Here we create a HashMap, to store specifically consumables.
         Map<String, Integer> consumableCount = new HashMap<>();
-
+        //Here we go through the player objects inventory List.
         for (Item i : playerInventoryItems){
+            //We add the item objects weight from the player objects List no matter what.
             totalWeight += i.getWeight();
-            if(i instanceof Consumable c && c.isStackable()) {
+            //We then use polymorphism, to see if the item object, is a consumable.
+            //We can do this because we abstracted Item, and extends our consumable class to it.
+            if(i instanceof Consumable c && c.getIsStackable()) {
+                //If our item object is from the consumable class and has the attribut "isStackable = true", we then put it into our has map.
                 consumableCount.put(c.getName(), consumableCount.getOrDefault(c.getName(), 0) + 1);
             }
             else{
+                //If our Item object was not a consumable, we add to our used Slot attribute.
                 usedSlots += 1;
             }
         }
+        //Once we are through our playerInventoryItems List, we go through our HashMap.
         for(Map.Entry<String, Integer> entry : consumableCount.entrySet()){
-            int count =  entry.getValue();
+            //We then create a new local attribute with the variable int.
+            //We count the amount of times and object with the same name appers.
+            int count = entry.getValue();
+            //Then we add it to our usedSlots but, we use Math.ceil to "count" and it is only everytime a certain name appers.
+            //The first instance of a stackable consumable will take up a usedSlot, but the next 4 of the same consumable object.
+            //Will not take up any usedSlots, but as already been added to the player objects weight.
             usedSlots += (int) Math.ceil(count / 5.0);
         }
+        //We end the method, with setting our player objects currentWeight and usedSlots attributes.
         currentPlayerCarryWeight = totalWeight;
         inventorySlots.setUsedSlots(usedSlots);
     }

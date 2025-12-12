@@ -12,7 +12,8 @@ public class Consumable extends Item {
         this.stackable = stackable;
         this.consumableType = consumableType;
     }
-    public boolean isStackable() {
+    //--This classes, setters and getters.---------------------------------------------------------------------------
+    public boolean getIsStackable() {
         return stackable;
     }
     public ConsumableType getConsumableType() {

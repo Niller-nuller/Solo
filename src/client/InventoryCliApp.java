@@ -6,9 +6,7 @@ import exceptions.MaxWeightReached;
 import exceptions.PlayerNameProblem;
 import models.*;
 import servicelogic.InventoryService;
-import sqldatabase.DBConnect;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 

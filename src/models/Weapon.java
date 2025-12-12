@@ -4,6 +4,7 @@ import models.enums.WeaponType;
 
 public class Weapon extends Item {
 
+
     private final int damage;
     private final WeaponType weaponType;
 
@@ -12,6 +13,7 @@ public class Weapon extends Item {
         this.damage = damage;
         this.weaponType = weaponType;
     }
+    //--This classes, setters and getters.---------------------------------------------------------------------------
     public int getDamage(){
         return damage;
     }
