@@ -37,7 +37,7 @@ public class PlayerRepository {
     }
     //This method is used to load in the correspondent inventory for the player object.
     private void initializePlayerInventory(Connection conn, Player p, int playerId) throws SQLException {
-        String sql = "SELECT item_id, quantity FROM FROM PlayerInventory WHERE player_id = ? ORDER BY slot_index";
+        String sql = "SELECT item_id, quantity FROM PlayerInventory WHERE player_id = ? ORDER BY slot_index";
 
         try(PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, playerId);
