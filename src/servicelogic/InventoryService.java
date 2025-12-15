@@ -110,7 +110,7 @@ public class InventoryService {
     // This layer is for adding and removing items from the player. It assumes a player is logged in.
 //---------------------------------------Slots Management---------------------------------------------------------------
     public void increasePlayerMaxSlots(Player p) {
-        p.getInventory().getInventorySlots().setCurrentMaxSlots();
+        p.getInventory().getInventorySlots().increaseMaxSlots();
     }
 
     //------------------------------------------------Displays--------------------------------------------------------------
