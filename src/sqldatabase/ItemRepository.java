@@ -29,7 +29,7 @@ public class ItemRepository {
                 }
             }
         } catch(SQLException e){
-            throw new RuntimeException("Failed to initialize world items");
+            throw new SQLException("Failed to initialize world items");
         }
         return items;
     }
@@ -61,7 +61,7 @@ public class ItemRepository {
         };
     }
 
-    public Item findItemById(int itemId) {
+    public Item findItemById(int itemId) throws SQLException{
         String sql = "SELECT * FROM worlditems WHERE id = ?";
         try(Connection conn = DBConnect.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -73,7 +73,7 @@ public class ItemRepository {
             }
 
         }catch (SQLException e) {
-            throw new RuntimeException("Error, could not find item by id", e);
+            throw new SQLException("Error, could not find item by id");
         }
         return null;
     }
@@ -88,7 +88,7 @@ public class ItemRepository {
                 }
             }
         } catch(SQLException e) {
-            throw new RuntimeException("Error, could not find item by name", e);
+            throw new SQLException("Error, could not find item by name");
         }
         return -1;
     }

@@ -20,18 +20,15 @@ public class InventoryService {
     private final ItemRepository itemRepository = new ItemRepository();
     private final PlayerRepository playerRepository = new PlayerRepository();
 
-    public InventoryService() { initializeGame();}
+    public InventoryService() {
+
+    }
 
 
 
-    private void initializeGame() {
-        try {
+    public void initializeGame() throws SQLException {
             worldItems.addAll(itemRepository.initializeWorldItems());
             players.addAll(playerRepository.initializePlayers());
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     //------------------------------------------------Player Management-----------------------------------------------------
@@ -64,12 +61,8 @@ public class InventoryService {
         return null;
     }
 
-    public void savePlayer(Player player) {
-        try {
+    public void savePlayer(Player player) throws SQLException {
             playerRepository.savePlayerAndInventory(player);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
     }
     //This layer of code in only to used to either create or login the player.
 //------------------------------------------------Item Management-------------------------------------------------------
@@ -167,7 +160,7 @@ public class InventoryService {
                         return 0;
                     }
                 });
-                break;
+            break;
         }
     }
     public void findItems(String criteria) throws ItemNotFound {
@@ -204,5 +197,4 @@ public class InventoryService {
             throw new ItemNotFound("No items found");
         }
     }
-
 }

@@ -14,8 +14,15 @@ public class InventoryCliApp {
     private final InventoryService inv = new InventoryService();
     private Player player;
 
-    public InventoryCliApp() throws SQLException {
+    public InventoryCliApp(){
+        try{
+            inv.initializeGame();}
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
+
 
 
     static void main(String[] args) throws SQLException {
@@ -87,6 +94,7 @@ public class InventoryCliApp {
     //Game Menu-----------------------------------------------------------------------------------
     public void gameMenu(Scanner scanner) {
         boolean running = true;
+
         while (running) {
             printGameMenu();
             String choice;
@@ -114,10 +122,13 @@ public class InventoryCliApp {
         System.out.print("Choice: ");
     }
 
-    private void handleSave(){
-        inv.savePlayer(player);
+    private void handleSave() {
+        try {
+            inv.savePlayer(player);
+        } catch (SQLException e) {
+            System.out.println("An error with SQL has acoured");
+        }
     }
-
 
     //WorldItem menu---------------------------------------------------------------
     private void worldItemMenu(Scanner scanner) {
@@ -258,7 +269,7 @@ public class InventoryCliApp {
         choice = scanner.nextLine();
         if (choice.equalsIgnoreCase("Yes")) {
             try {
-                player.getInventory().getInventorySlots().setCurrentMaxSlots();
+                inv.increasePlayerMaxSlots(player);
                 System.out.println("Congratulations! Your max slot limit has increased by 32");
             } catch (MaxSlotsReached e) {
                 System.out.println(e.getMessage());
