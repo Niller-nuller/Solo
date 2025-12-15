@@ -44,11 +44,14 @@ public class InventoryCliApp {
                         handlePlayerCreating(scanner);
                     }
 
-                    case "2" -> {
+                    case "2" ->
                         handleLogInPlayer(scanner);
-                    }
 
-                    case "3" -> {
+
+                    case "3" -> handleDeletePlayer(scanner);
+
+
+                    case "4" -> {
                         running = false;
                         System.out.println("Shutting down");
                     }
@@ -62,7 +65,8 @@ public class InventoryCliApp {
         System.out.println("---Main menu---");
         System.out.println("1. Create new player");
         System.out.println("2. Log in");
-        System.out.println("3. Exit");
+        System.out.println("3. Delete Player");
+        System.out.println("4. Exit");
         System.out.println("---------------");
         System.out.print("Choice: ");
     }
@@ -89,7 +93,18 @@ public class InventoryCliApp {
             System.out.println(e.getMessage());
         }
     }
-
+    private void handleDeletePlayer(Scanner scanner) {
+        System.out.print("Username of desired player to delete: ");
+        String username = scanner.nextLine().trim();
+        try {
+            inv.deletePlayer(username);
+            System.out.println("Player " + username + " has been deleted");
+        } catch  (PlayerNameProblem e) {
+            System.out.println(e.getMessage());
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     //Game Menu-----------------------------------------------------------------------------------
     public void gameMenu(Scanner scanner) {
@@ -260,20 +275,25 @@ public class InventoryCliApp {
     }
 
     private void handleIncreaseSlots(Scanner scanner) {
-        System.out.println("----Free slots----");
+        System.out.println("---- Free slots ----");
         System.out.println("Do you wish to increase your slots?");
         System.out.println("Yes or no?");
         System.out.println("-------------------");
         System.out.print("Choice: ");
-        String choice;
-        choice = scanner.nextLine();
-        if (choice.equalsIgnoreCase("Yes")) {
+
+        String choice = scanner.nextLine().trim();
+
+        if (choice.equalsIgnoreCase("yes")) {
             try {
                 inv.increasePlayerMaxSlots(player);
                 System.out.println("Congratulations! Your max slot limit has increased by 32");
             } catch (MaxSlotsReached e) {
                 System.out.println(e.getMessage());
             }
+        } else if (choice.equalsIgnoreCase("no")) {
+            System.out.println("Returning to menu...");
+        } else {
+            System.out.println("Invalid choice. Please type 'yes' or 'no'.");
         }
     }
 

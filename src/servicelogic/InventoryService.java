@@ -64,6 +64,15 @@ public class InventoryService {
     public void savePlayer(Player player) throws SQLException {
             playerRepository.savePlayerAndInventory(player);
     }
+
+    public void deletePlayer(String username) throws PlayerNameProblem, SQLException {
+        Player p = getPlayerByName(username);
+        if(p == null) {
+            throw new PlayerNameProblem(username + " doesn't exist");
+        }
+            playerRepository.deletePlayerAndInventory(username);
+            players.remove(p);
+    }
     //This layer of code in only to used to either create or login the player.
 //------------------------------------------------Item Management-------------------------------------------------------
     public void addItem(Player p, String itemName) throws ItemNotFound, MaxWeightReached, MaxSlotsReached {
