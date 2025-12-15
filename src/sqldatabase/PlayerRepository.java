@@ -19,7 +19,7 @@ public class PlayerRepository {
     //This method is used load in information about our player table in our sql server.
     public List<Player> initializePlayers() throws SQLException {
         List<Player> players = new ArrayList<>();
-        String sql = "SELECT id, name FROM Players";
+        String sql = "SELECT id, name FROM players";
 
         try(Connection conn = DBConnect.getConnection()){
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -39,7 +39,7 @@ public class PlayerRepository {
     }
     //This method is used to load in the correspondent inventory for the player object.
     private void initializePlayerInventory(Connection conn, Player p, int playerId) throws SQLException {
-        String sql = "SELECT item_id, quantity FROM PlayerInventory WHERE player_id = ? ORDER BY slot_index";
+        String sql = "SELECT item_id, quantity FROM playerInventory WHERE player_id = ? ORDER BY slot_index";
 
         try(PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, playerId);
@@ -69,7 +69,7 @@ public class PlayerRepository {
             saveToPlayerInventory(conn, playerId, p.getInventory().getPlayerInventoryItems());
             conn.commit();
         } catch (SQLException e){
-            throw new SQLException("Save failed");
+            throw new RuntimeException("Save failed");
         }
     }
     private int getPlayerId(Connection conn, String playerName) throws SQLException {
@@ -79,9 +79,7 @@ public class PlayerRepository {
             try(ResultSet rs = stmt.executeQuery()){
                 if(rs.next()){
                     return rs.getInt("id");
-                    }
-                } catch (SQLException e){
-                throw new SQLException("Could not fetch player id from database");
+                }
             }
         }
 
@@ -100,58 +98,37 @@ public class PlayerRepository {
         }
     }
     private void clearPlayerInventory(Connection conn, int playerId) throws SQLException {
-        String deleteSQL = "DELETE FROM PlayerInventory WHERE player_id = ?";
+        String deleteSQL = "DELETE FROM playerinventory WHERE player_id = ?";
         try(PreparedStatement stmt = conn.prepareStatement(deleteSQL)){
             stmt.setInt(1, playerId);
             stmt.executeUpdate();
-        } catch (SQLException e){
-            throw new SQLException("Could not clear player inventory");
         }
     }
-    private void saveToPlayerInventory(Connection conn, int PlayerId, List<Item> items ) throws SQLException {
-        String insertSQL = "INSERT INTO PlayerInventory (player_id, item_id, quantity, slot_index) VALUES (?, ?, ?, ?)";
 
+    private void saveToPlayerInventory(Connection conn, int playerId,List<Item> items) throws SQLException {
+        String insertSQL = "INSERT INTO playerinventory (player_id, item_id, quantity, slot_index) VALUES (?, ?, ?, ?)";
+
+        Map<String, Integer> count = new HashMap<>();
+        for(Item item : items){
+            count.merge(item.getName(), 1, Integer::sum);
+        }
         try(PreparedStatement stmt = conn.prepareStatement(insertSQL)){
             int slotIndex = 0;
-            for (Item item : items) {
-                int itemId = itemRepository.findItemByName(conn, item.getName());
+            for(Map.Entry<String, Integer> entry : count.entrySet()){
+                String itemName = entry.getKey();
+                int quantity = entry.getValue();
+
+                int itemId = itemRepository.findItemByName(conn, itemName);
                 if(itemId != -1){
-                    stmt.setInt(1, PlayerId);
+                    stmt.setInt(1, playerId);
                     stmt.setInt(2, itemId);
-                    stmt.setInt(3, 1);
+                    stmt.setInt(3, quantity);
                     stmt.setInt(4, slotIndex++);
                     stmt.addBatch();
                 }
             }
             stmt.executeBatch();
-        } catch (SQLException e){
-            throw new SQLException("Could not save player inventory");
         }
     }
-//    private void saveToPlayerInventory(Connection conn, int playerId,List<Item> items) throws SQLException {
-//        String insertSQL = "INSERT INTO PlayerInventory (player_id, item_id, quantity, slot_index) VALUES (?, ?, ?, ?)";
-//
-//        Map<String, Integer> count = new HashMap<>();
-//        for(Item item : items){
-//            count.merge(item.getName(), 1, Integer::sum);
-//        }
-//        try(PreparedStatement stmt = conn.prepareStatement(insertSQL)){
-//            int slotIndex = 0;
-//            for(Map.Entry<String, Integer> entry : count.entrySet()){
-//                String itemName = entry.getKey();
-//                int quantity = entry.getValue();
-//
-//                int itemId = itemRepository.findItemByName(conn, itemName);
-//                if(itemId != -1){
-//                    stmt.setInt(1, playerId);
-//                    stmt.setInt(2, itemId);
-//                    stmt.setInt(3, quantity);
-//                    stmt.setInt(4, slotIndex++);
-//                    stmt.addBatch();
-//                }
-//            }
-//            stmt.executeBatch();
-//        }
-//    }
 //----------------------------------------------------------------------------------------------------------------------
 }
