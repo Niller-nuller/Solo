@@ -18,7 +18,7 @@ public class Slots {
     public void setUsedSlots(int amount){this.usedSlots = amount;}
 
 
-    public void setCurrentMaxSlots() throws MaxSlotsReached {
+    public void addMoreSlots() throws MaxSlotsReached {
         if(this.currentSlots >= maxSlots){
             throw new MaxSlotsReached("You have unlocked the max amount of inventory space");
         }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemRepository {
-
+//This method is used to initialize all world items at the begninnger of the instance.
     public List<Item> initializeWorldItems() throws SQLException {
         List<Item> items = new ArrayList<Item>();
         String sql = "SELECT * FROM worlditems";
@@ -33,6 +33,7 @@ public class ItemRepository {
         }
         return items;
     }
+    //this method is used to create items read from the sql.
     private Item createItemFromResultSet(ResultSet rs) throws SQLException {
         String name = rs.getString("name");
         String type = rs.getString("type");
@@ -60,7 +61,7 @@ public class ItemRepository {
             default -> throw new SQLException("Error when creating world items from database set");
         };
     }
-
+    //this method is used to find items by id from the sql when called.
     public Item findItemById(int itemId) {
         String sql = "SELECT * FROM worlditems WHERE id = ?";
         try(Connection conn = DBConnect.getConnection()) {
@@ -77,7 +78,7 @@ public class ItemRepository {
         }
         return null;
     }
-
+    //this method is used to find items by there name from the sql.
     public int findItemByName(Connection conn, String itemName) throws SQLException {
         String sql = "SELECT id FROM worlditems WHERE name = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

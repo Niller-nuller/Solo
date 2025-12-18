@@ -72,6 +72,7 @@ public class PlayerRepository {
             throw new RuntimeException("Save failed");
         }
     }
+    //This method is used to clear the players inventory when we save to sql so we can save over it.
     private int getPlayerId(Connection conn, String playerName) throws SQLException {
         String selectSQL = "SELECT id FROM players WHERE name = ?";
         try(PreparedStatement stmt = conn.prepareStatement(selectSQL)){
@@ -97,6 +98,7 @@ public class PlayerRepository {
             }
         }
     }
+    //This method is for clearing the players inventory from sql when we delete a player.
     private void clearPlayerInventory(Connection conn, int playerId) throws SQLException {
         String deleteSQL = "DELETE FROM playerinventory WHERE player_id = ?";
         try(PreparedStatement stmt = conn.prepareStatement(deleteSQL)){
@@ -104,7 +106,7 @@ public class PlayerRepository {
             stmt.executeUpdate();
         }
     }
-
+    //This method is used to save the inventory.
     private void saveToPlayerInventory(Connection conn, int playerId,List<Item> items) throws SQLException {
         String insertSQL = "INSERT INTO playerinventory (player_id, item_id, quantity, slot_index) VALUES (?, ?, ?, ?)";
 
@@ -130,6 +132,7 @@ public class PlayerRepository {
             stmt.executeBatch();
         }
     }
+    //This method is used to delete the players inventory when he deletes the player.
     public void deletePlayerAndInventory(String playerName) throws SQLException {
         try(Connection conn = DBConnect.getConnection()){
             conn.setAutoCommit(false);

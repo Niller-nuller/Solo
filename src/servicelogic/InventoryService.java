@@ -2,7 +2,6 @@ package servicelogic;
 
 import exceptions.*;
 import models.*;
-import sqldatabase.DBConnect;
 import sqldatabase.ItemRepository;
 import sqldatabase.PlayerRepository;
 
@@ -93,7 +92,7 @@ public class InventoryService {
             p.getInventory().removeItem(findItem);
         }
     }
-
+    //this one finds item objects in the world items list and returns the item object.
     private Item getWorldItemByName(String name) {
         for (Item i : worldItems) {
             if (i.getName().equalsIgnoreCase(name)) {
@@ -102,7 +101,7 @@ public class InventoryService {
         }
         return null;
     }
-
+    //this method checks the different atributes that make up the inventory restirctions.
     private void checkInventory(Player p, Item item) throws MaxWeightReached, MaxSlotsReached {
         int availablePlayerSlots = p.getInventory().getInventorySlots().getCurrentSlots();
         int usedPlayerSlots = p.getInventory().getInventorySlots().getUsedSlots();
@@ -119,7 +118,7 @@ public class InventoryService {
     // This layer is for adding and removing items from the player. It assumes a player is logged in.
 //---------------------------------------Slots Management---------------------------------------------------------------
     public void increasePlayerMaxSlots(Player p) {
-        p.getInventory().getInventorySlots().setCurrentMaxSlots();
+        p.getInventory().getInventorySlots().addMoreSlots();
     }
 
     //------------------------------------------------Displays--------------------------------------------------------------
